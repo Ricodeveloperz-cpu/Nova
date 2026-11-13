@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8d94e" />
+  <meta name="description" content="Nova AI — asisten AI pribadi." />
+  <title>Nova AI — Your creative assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><span class="brand-mark">N</span><span>NOVA<span class="brand-light">.AI</span></span></div>
+      <button class="new-chat brutal-btn" id="newChatBtn"><span>＋</span> Percakapan baru</button>
+      <div class="side-label">RUANG KERJA</div>
+      <button class="side-link active" id="homeBtn">◈ <span>Assistant</span></button>
+      <button class="side-link" id="adminBtn">▦ <span>Dashboard admin</span></button>
+      <div class="side-label history-label">RIWAYAT CHAT</div>
+      <div id="chatHistory" class="chat-history"><p class="muted small">Masuk untuk menyimpan percakapan.</p></div>
+      <div class="sidebar-bottom">
+        <div class="user-card">
+          <div class="avatar" id="userAvatar">N</div>
+          <div class="user-meta"><strong id="userEmail">Guest mode</strong><span id="userStatus">Belum masuk</span></div>
+          <button class="icon-btn" id="authBtn" title="Login / Logout">↗</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Buka menu">☰</button>
+        <div class="crumb">RUANG KERJA <span>/</span> <b id="pageName">ASSISTANT</b></div>
+        <div class="top-actions"><span class="status-dot"></span><span class="online-label">SISTEM SIAP</span><button class="theme-btn" id="themeBtn" title="Ubah tema terang atau gelap">◐</button></div>
+      </header>
+
+      <section class="welcome" id="welcome">
+        <div class="eyebrow"><span class="eyebrow-line"></span> ASISTEN AI PRIBADIMU</div>
+        <h1>Ide besar.<br><span>Mulai dari sini.</span></h1>
+        <p class="welcome-copy">Halo, aku Nova. Ceritakan apa yang ingin kamu buat, pelajari, atau selesaikan hari ini.</p>
+        <div class="prompt-grid">
+          <button class="prompt-card" data-prompt="Bantu saya membuat website modern dari nol."><span class="prompt-icon">✳</span><b>Build something</b><small>Buat website atau aplikasi</small><span class="card-arrow">↗</span></button>
+          <button class="prompt-card" data-prompt="Jelaskan topik yang sulit dengan bahasa sederhana dan contoh."><span class="prompt-icon">⌘</span><b>Learn something</b><small>Pelajari hal baru</small><span class="card-arrow">↗</span></button>
+          <button class="prompt-card" data-prompt="Bantu saya mencari ide kreatif untuk project baru."><span class="prompt-icon">✎</span><b>Get creative</b><small>Temukan ide segar</small><span class="card-arrow">↗</span></button>
+          <button class="prompt-card" data-prompt="Bantu saya menganalisis masalah ini langkah demi langkah."><span class="prompt-icon">⌁</span><b>Solve a problem</b><small>Pecahkan masalah</small><span class="card-arrow">↗</span></button>
+        </div>
+      </section>
+
+      <section class="chat-area hidden" id="chatArea"><div id="messages" class="messages"></div></section>
+      <section class="admin-area hidden" id="adminArea">
+        <div class="eyebrow"><span class="eyebrow-line"></span> CONTROL CENTER</div>
+        <h2>Dashboard admin<span>.</span></h2>
+        <p class="muted">Statistik penggunaan Nova AI.</p>
+        <div class="stats-grid">
+          <div class="stat-card"><small>TOTAL USERS</small><strong id="statUsers">—</strong></div>
+          <div class="stat-card"><small>AI MESSAGES</small><strong id="statMessages">—</strong></div>
+          <div class="stat-card"><small>ACTIVE MODEL</small><strong class="model-stat" id="statModel">—</strong></div>
+        </div>
+        <p id="adminNotice" class="notice">Dashboard hanya dapat dibuka oleh email admin yang diatur di Vercel.</p>
+      </section>
+
+      <footer class="composer-wrap" id="composerWrap">
+        <form id="chatForm" class="composer">
+          <textarea id="promptInput" rows="1" placeholder="Tulis pesan untuk Nova AI..." maxlength="12000"></textarea>
+          <div class="composer-tools">
+            <div class="tool-left">
+              <label class="attach-btn" for="fileInput" title="Lampirkan gambar atau file teks">＋ <span>Lampirkan</span></label>
+              <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.json,.js,.html,.css" hidden />
+              <span id="fileLabel" class="file-label"></span>
+              <span class="model-pill">✦ <span id="modelName">GPT model</span></span>
+            </div>
+            <button class="send-btn" id="sendBtn" type="submit" aria-label="Kirim pesan">↑</button>
+          </div>
+        </form>
+        <p class="disclaimer">Nova AI dapat membuat kesalahan. Periksa kembali informasi penting.</p>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="authDialog" class="auth-dialog">
+    <form method="dialog"><button class="dialog-close" aria-label="Tutup">×</button></form>
+    <div class="dialog-mark">N</div><div class="eyebrow">SELAMAT DATANG DI NOVA</div>
+    <h2 id="authTitle">Masuk ke akunmu<span>.</span></h2>
+    <p class="muted" id="authDescription">Masuk untuk menyimpan riwayat percakapan dan melanjutkannya dari perangkat lain.</p>
+    <form id="authForm" class="auth-form">
+      <label>Email<input type="email" id="emailInput" placeholder="nama@email.com" required autocomplete="email"></label>
+      <label>Password<input type="password" id="passwordInput" placeholder="Minimal 6 karakter" minlength="6" required autocomplete="current-password"></label>
+      <button class="brutal-btn auth-submit" id="authSubmit" type="submit">Masuk <span>↗</span></button>
+    </form>
+    <button class="text-btn" id="authSwitch">Belum punya akun? Daftar</button>
+    <p id="authMessage" class="auth-message"></p>
+  </dialog>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
