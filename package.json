@@ -1,0 +1,18 @@
+{
+  "name": "nova-ai-vercel",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "check": "node --check api/chat.js && node --check api/admin.js && node --check public/app.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "openai": "^5.20.0"
+  },
+  "devDependencies": {
+    "vercel": "^48.1.0"
+  }
+}
