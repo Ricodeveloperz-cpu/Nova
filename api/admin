@@ -1,0 +1,47 @@
+import { createClient } from "@supabase/supabase-js";
+
+export const config = { runtime: "nodejs" };
+
+const send = (data, status = 200) => new Response(JSON.stringify(data), {
+  status,
+  headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
+});
+
+export default async function handler(req) {
+  if (req.method !== "GET") return send({ error: "Method not allowed." }, 405);
+
+  const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAILS = "" } = process.env;
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
+    return send({ error: "Konfigurasi Supabase belum lengkap." }, 500);
+  }
+
+  const header = req.headers.get("authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (!token) return send({ error: "Silakan login sebagai admin." }, 401);
+
+  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  const { data: { user }, error } = await authClient.auth.getUser(token);
+  if (error || !user) return send({ error: "Sesi tidak valid." }, 401);
+
+  const admins = ADMIN_EMAILS.split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+  if (!user.email || !admins.includes(user.email.toLowerCase())) {
+    return send({ error: "Akses admin ditolak." }, 403);
+  }
+
+  const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  const [{ count: users, error: userError }, { count: messages, error: messageError }] = await Promise.all([
+    db.from("profiles").select("id", { count: "exact", head: true }),
+    db.from("ai_usage").select("id", { count: "exact", head: true })
+  ]);
+
+  if (userError || messageError) return send({ error: "Gagal mengambil statistik database." }, 500);
+  return send({
+    users: users || 0,
+    messages: messages || 0,
+    model: process.env.OPENAI_MODEL || "gpt-6-luna"
+  });
+}
